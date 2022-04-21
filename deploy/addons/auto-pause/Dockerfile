@@ -1,2 +1,2 @@
-FROM golang:1.8
+FROM golang:bullseye
 ADD auto-pause-hook /auto-pause-hook

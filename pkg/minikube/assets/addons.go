@@ -277,7 +277,7 @@ var Addons = map[string]*Addon{
 			"0640"),
 	}, false, "ingress", "Kubernetes", "", "https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/", map[string]string{
 		// https://github.com/kubernetes/ingress-nginx/blob/3476232f5c38383dd157ddaff3b4c7cebd57284e/deploy/static/provider/kind/deploy.yaml#L445
-		"IngressController": "ingress-nginx/controller:v1.10.1@sha256:e24f39d3eed6bcc239a56f20098878845f62baa34b9f2be2fd2c38ce9fb0f29e",
+		"IngressController": "ingress-nginx/controller:v1.11.1@sha256:e6439a12b52076965928e83b7b56aae6731231677b01e81818bce7fa5c60161a",
 		// https://github.com/kubernetes/ingress-nginx/blob/3476232f5c38383dd157ddaff3b4c7cebd57284e/deploy/static/provider/kind/deploy.yaml#L552
 		"KubeWebhookCertgenCreate": "ingress-nginx/kube-webhook-certgen:v1.4.1@sha256:36d05b4077fb8e3d13663702fa337f124675ba8667cbd949c03a8e8ea6fa4366",
 		// https://github.com/kubernetes/ingress-nginx/blob/3476232f5c38383dd157ddaff3b4c7cebd57284e/deploy/static/provider/kind/deploy.yaml#L601
@@ -294,7 +294,7 @@ var Addons = map[string]*Addon{
 			"istio-operator.yaml",
 			"0640"),
 	}, false, "istio-provisioner", "3rd party (Istio)", "", "https://istio.io/latest/docs/setup/platform-setup/minikube/", map[string]string{
-		"IstioOperator": "istio/operator:1.22.1@sha256:60ccb23afccf54238a0abad2c59316e2f832e7064de0eeb7d936f4094211bcb3",
+		"IstioOperator": "istio/operator:1.22.3@sha256:1e958929b1a94e1f9a4ea529fbb0717ec9ba9bfc1c4406534ef1fb57f9700b4a",
 	}, map[string]string{
 		"IstioOperator": "docker.io",
 	}),
@@ -316,7 +316,7 @@ var Addons = map[string]*Addon{
 		MustBinAsset(addons.InspektorGadgetAssets, "inspektor-gadget/ig-daemonset.yaml.tmpl", vmpath.GuestAddonsDir, "ig-daemonset.yaml", "0640"),
 	}, false, "inspektor-gadget", "3rd party (inspektor-gadget.io)", "https://github.com/orgs/inspektor-gadget/people", "https://minikube.sigs.k8s.io/docs/handbook/addons/inspektor-gadget/",
 		map[string]string{
-			"InspektorGadget": "inspektor-gadget/inspektor-gadget:v0.29.0@sha256:40402d51273ea7d281392557096333b5f62316a684f9bc9252214243840f757e",
+			"InspektorGadget": "inspektor-gadget/inspektor-gadget:v0.30.0@sha256:bda802dd37a41ba160bf10134538fd1a1ce05efcc14ab4c38b5f6b1e6dccd734",
 		}, map[string]string{
 			"InspektorGadget": "ghcr.io",
 		}),
@@ -327,7 +327,7 @@ var Addons = map[string]*Addon{
 			"kong-ingress-controller.yaml",
 			"0640"),
 	}, false, "kong", "3rd party (Kong HQ)", "@gAmUssA", "https://minikube.sigs.k8s.io/docs/handbook/addons/kong-ingress/", map[string]string{
-		"Kong":        "kong:3.7.1@sha256:43b2e4e47b35deb698f9bb43d1e83a004f7bef9a4380d364bc4916f4751e410d",
+		"Kong":        "kong:3.7.1@sha256:1ab5941fbe393fd7fef0f64b346f5738334cb269fbbd47ce8142a859f93b3405",
 		"KongIngress": "kong/kubernetes-ingress-controller:2.12.0@sha256:ef450cd85f4237aa5acf3bfaebd064accdc6a445419bec20a5a68067c55c6809",
 	}, map[string]string{
 		"Kong":        "docker.io",
@@ -340,7 +340,7 @@ var Addons = map[string]*Addon{
 			"pod.yaml",
 			"0640"),
 	}, false, "kubevirt", "3rd party (KubeVirt)", "", "https://minikube.sigs.k8s.io/docs/handbook/addons/kubevirt/", map[string]string{
-		"Kubectl": "bitnami/kubectl:1.30.2@sha256:e704ebf9f6974d506d2dbff33dea28b6e996887e60c4ab298c78e10a3d81e249",
+		"Kubectl": "bitnami/kubectl:1.30.3@sha256:c20ccfdedb71c0c5374dba6841a09e10e9941d6e776e14d43d99c2113585c9ba",
 	}, map[string]string{
 		"Kubectl": "docker.io",
 	}),
@@ -406,7 +406,7 @@ var Addons = map[string]*Addon{
 			"registry-proxy.yaml",
 			"0640"),
 	}, false, "registry", "minikube", "", "", map[string]string{
-		"Registry":          "registry:2.8.3@sha256:79b29591e1601a73f03fcd413e655b72b9abfae5a23f1ad2e883d4942fbb4351",
+		"Registry":          "registry:2.8.3@sha256:12120425f07de11a1b899e418d4b0ea174c8d4d572d45bdb640f93bc7ca06a3d",
 		"KubeRegistryProxy": "k8s-minikube/kube-registry-proxy:0.0.6@sha256:b3fa0b2df8737fdb85ad5918a7e2652527463e357afff83a5e5bb966bcedc367",
 	}, map[string]string{
 		"KubeRegistryProxy": "gcr.io",
@@ -555,7 +555,7 @@ var Addons = map[string]*Addon{
 			"ingress-dns-pod.yaml",
 			"0640"),
 	}, false, "ingress-dns", "minikube", "", "https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/", map[string]string{
-		"IngressDNS": "k8s-minikube/minikube-ingress-dns:0.0.2@sha256:4abe27f9fc03fedab1d655e2020e6b165faf3bf6de1088ce6cf215a75b78f05f",
+		"IngressDNS": "k8s-minikube/minikube-ingress-dns:0.0.3@sha256:4211a1de532376c881851542238121b26792225faa36a7b02dccad88fd05797c",
 	}, map[string]string{
 		"IngressDNS": "gcr.io",
 	}),
@@ -628,9 +628,9 @@ var Addons = map[string]*Addon{
 			"volcano-deployment.yaml",
 			"0640"),
 	}, false, "volcano", "third-party (volcano)", "hwdef", "", map[string]string{
-		"vc_webhook_manager":    "volcanosh/vc-webhook-manager:v1.7.0@sha256:082b6a3b7b8b69d98541a8ea56958ef427fdba54ea555870799f8c9ec2754c1b",
-		"vc_controller_manager": "volcanosh/vc-controller-manager:v1.7.0@sha256:1dd0973f67becc3336f009cce4eac8677d857aaf4ba766cfff371ad34dfc34cf",
-		"vc_scheduler":          "volcanosh/vc-scheduler:v1.7.0@sha256:64d6efcf1a48366201aafcaf1bd4cb6d66246ec1c395ddb0deefe11350bcebba",
+		"vc_webhook_manager":    "volcanosh/vc-webhook-manager:v1.9.0@sha256:31e8c7adc6859e582b8edd053e2e926409bcfd1bf39e3a10d05949f7738144c4",
+		"vc_controller_manager": "volcanosh/vc-controller-manager:v1.9.0@sha256:d1337c3af008318577ca718a7f35b75cefc1071a35749c4f9430035abd4fbc93",
+		"vc_scheduler":          "volcanosh/vc-scheduler:v1.9.0@sha256:1ebc36090a981cb8bd703f9e9842f8e0a53ef6bf9034d51defc1ea689f38a60f",
 	}, map[string]string{
 		"vc_webhook_manager":    "docker.io",
 		"vc_controller_manager": "docker.io",
@@ -779,7 +779,7 @@ var Addons = map[string]*Addon{
 		MustBinAsset(addons.HeadlampAssets, "headlamp/headlamp-clusterrolebinding.yaml", vmpath.GuestAddonsDir, "headlamp-clusterrolebinding.yaml", "0640"),
 	}, false, "headlamp", "3rd party (kinvolk.io)", "yolossn", "https://minikube.sigs.k8s.io/docs/handbook/addons/headlamp/",
 		map[string]string{
-			"Headlamp": "headlamp-k8s/headlamp:v0.24.1@sha256:1c3f42aacd8eee1d3f1c63efb5a3b42da387ca1d87b77b0f486e8443201fcb37",
+			"Headlamp": "headlamp-k8s/headlamp:v0.25.0@sha256:899d106eeb55b0afc4ee6e51c03bc4418de0bd0e79c39744d4d0d751aae6a971",
 		},
 		map[string]string{
 			"Headlamp": "ghcr.io",
@@ -787,7 +787,7 @@ var Addons = map[string]*Addon{
 	"cloud-spanner": NewAddon([]*BinAsset{
 		MustBinAsset(addons.CloudSpanner, "cloud-spanner/deployment.yaml.tmpl", vmpath.GuestAddonsDir, "deployment.yaml", "0640"),
 	}, false, "cloud-spanner", "Google", "", "https://minikube.sigs.k8s.io/docs/handbook/addons/cloud-spanner/", map[string]string{
-		"CloudSpanner": "cloud-spanner-emulator/emulator:1.5.17@sha256:6a72be4b6978a014035656e130840ad1bc06c8aa7c4de78871464ad5714565d4",
+		"CloudSpanner": "cloud-spanner-emulator/emulator:1.5.22@sha256:ea3a9e70a98bf648952401e964c5403d93e980837acf924288df19e0077ae7fb",
 	}, map[string]string{
 		"CloudSpanner": "gcr.io",
 	}),
@@ -799,7 +799,7 @@ var Addons = map[string]*Addon{
 		MustBinAsset(addons.NvidiaDevicePlugin, "nvidia-device-plugin/nvidia-device-plugin.yaml.tmpl", vmpath.GuestAddonsDir, "nvidia-device-plugin.yaml", "0640"),
 	}, false, "nvidia-device-plugin", "3rd party (NVIDIA)", "", "https://minikube.sigs.k8s.io/docs/tutorials/nvidia/",
 		map[string]string{
-			"NvidiaDevicePlugin": "nvidia/k8s-device-plugin:v0.15.0@sha256:1aff0e9f0759758f87cb158d78241472af3a76cdc631f01ab395f997fa80f707",
+			"NvidiaDevicePlugin": "nvidia/k8s-device-plugin:v0.16.1@sha256:89612c7851300ddeed218b9df0dcb33bbb8495282aa17c554038e52387ce7f1e",
 		}, map[string]string{
 			"NvidiaDevicePlugin": "nvcr.io",
 		}),

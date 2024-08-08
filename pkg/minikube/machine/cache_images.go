@@ -118,7 +118,7 @@ func LoadCachedImages(cc *config.ClusterConfig, runner command.Runner, images []
 		})
 	}
 	if err := g.Wait(); err != nil {
-		return errors.Wrap(err, "loading cached images")
+		return errors.Wrap(err, "LoadCachedImages")
 	}
 	klog.Infoln("Successfully loaded all cached images")
 	return nil
@@ -223,7 +223,6 @@ func DoLoadImages(images []string, profiles []*config.Profile, cacheDir string, 
 
 		for _, n := range c.Nodes {
 			m := config.MachineName(*c, n)
-
 			status, err := Status(api, m)
 			if err != nil {
 				klog.Warningf("error getting status for %s: %v", m, err)
@@ -251,7 +250,7 @@ func DoLoadImages(images []string, profiles []*config.Profile, cacheDir string, 
 				}
 				if err != nil {
 					failed = append(failed, m)
-					klog.Warningf("Failed to load cached images for profile %s. make sure the profile is running. %v", pName, err)
+					klog.Warningf("Failed to load cached images for %q: %v", pName, err)
 					continue
 				}
 				succeeded = append(succeeded, m)
@@ -259,8 +258,12 @@ func DoLoadImages(images []string, profiles []*config.Profile, cacheDir string, 
 		}
 	}
 
-	klog.Infof("succeeded pushing to: %s", strings.Join(succeeded, " "))
-	klog.Infof("failed pushing to: %s", strings.Join(failed, " "))
+	if len(succeeded) > 0 {
+		klog.Infof("succeeded pushing to: %s", strings.Join(succeeded, " "))
+	}
+	if len(failed) > 0 {
+		klog.Infof("failed pushing to: %s", strings.Join(failed, " "))
+	}
 	// Live pushes are not considered a failure
 	return nil
 }
@@ -309,6 +312,9 @@ func transferAndLoadImage(cr command.Runner, k8s config.KubernetesConfig, src st
 
 	err = r.LoadImage(dst)
 	if err != nil {
+		if strings.Contains(err.Error(), "ctr: image might be filtered out") {
+			out.WarningT("The image '{{.imageName}}' does not match arch of the container runtime, use a multi-arch image instead", out.V{"imageName": imgName})
+		}
 		return errors.Wrapf(err, "%s load %s", r.Name(), dst)
 	}
 
@@ -329,7 +335,7 @@ func removeExistingImage(r cruntime.Manager, src string, imgName string) error {
 	}
 
 	errStr := strings.ToLower(err.Error())
-	if !strings.Contains(errStr, "no such image") {
+	if !strings.Contains(errStr, "no such image") && !strings.Contains(errStr, "unable to remove the image") {
 		return errors.Wrap(err, "removing image")
 	}
 
@@ -466,9 +472,22 @@ func transferAndSaveImage(cr command.Runner, k8s config.KubernetesConfig, dst st
 	if err != nil {
 		return errors.Wrap(err, "runtime")
 	}
+	found := false
+	// the reason why we are doing this is that
+	// unlike other tool, podman assume the image has a localhost registry (not docker.io)
+	// if the image is loaded with a tarball without a registry specified in tag
+	// see https://github.com/containers/podman/issues/15974
+	tryImageExist := []string{imgName, cruntime.AddDockerIO(imgName), cruntime.AddLocalhostPrefix(imgName)}
+	for _, imgName = range tryImageExist {
+		if r.ImageExists(imgName, "") {
+			found = true
+			break
+		}
+	}
 
-	if !r.ImageExists(imgName, "") {
-		return errors.Errorf("image %s not found", imgName)
+	if !found {
+		// if all of this failed, return the original error
+		return fmt.Errorf("image not found %s", imgName)
 	}
 
 	klog.Infof("Saving image to: %s", dst)

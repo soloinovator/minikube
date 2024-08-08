@@ -55,9 +55,10 @@ import (
 	"github.com/phayes/freeport"
 	"github.com/pkg/errors"
 	"golang.org/x/build/kubernetes/api"
+	"k8s.io/minikube/pkg/minikube/cruntime"
 )
 
-const addonResizer = "gcr.io/google-containers/addon-resizer"
+const echoServerImg = "kicbase/echo-server"
 
 // validateFunc are for subtests that share a single setup
 type validateFunc func(context.Context, *testing.T, string)
@@ -182,10 +183,10 @@ func cleanupUnwantedImages(ctx context.Context, t *testing.T, profile string) {
 	if err != nil {
 		t.Skipf("docker is not installed, cannot delete docker images")
 	} else {
-		t.Run("delete addon-resizer images", func(t *testing.T) {
-			tags := []string{"1.8.8", profile}
+		t.Run("delete echo-server images", func(t *testing.T) {
+			tags := []string{"1.0", profile}
 			for _, tag := range tags {
-				image := fmt.Sprintf("%s:%s", addonResizer, tag)
+				image := fmt.Sprintf("%s:%s", echoServerImg, tag)
 				rr, err := Run(t, exec.CommandContext(ctx, "docker", "rmi", "-f", image))
 				if err != nil {
 					t.Logf("failed to remove image %q from docker images. args %q: %v", image, rr.Command(), err)
@@ -230,7 +231,7 @@ func validateNodeLabels(ctx context.Context, t *testing.T, profile string) {
 
 // tagAndLoadImage is a helper function to pull, tag, load image (decreases cyclomatic complexity for linter).
 func tagAndLoadImage(ctx context.Context, t *testing.T, profile, taggedImage string) {
-	newPulledImage := fmt.Sprintf("%s:%s", addonResizer, "1.8.9")
+	newPulledImage := fmt.Sprintf("%s:%s", echoServerImg, "latest")
 	rr, err := Run(t, exec.CommandContext(ctx, "docker", "pull", newPulledImage))
 	if err != nil {
 		t.Fatalf("failed to setup test (pull image): %v\n%s", err, rr.Output())
@@ -325,8 +326,8 @@ func validateImageCommands(ctx context.Context, t *testing.T, profile string) {
 		checkImageExists(ctx, t, profile, newImage)
 	})
 
-	taggedImage := fmt.Sprintf("%s:%s", addonResizer, profile)
-	imageFile := "addon-resizer-save.tar"
+	taggedImage := fmt.Sprintf("%s:%s", echoServerImg, profile)
+	imageFile := "echo-server-save.tar"
 	var imagePath string
 	defer os.Remove(imageFile)
 
@@ -337,7 +338,7 @@ func validateImageCommands(ctx context.Context, t *testing.T, profile string) {
 			t.Fatalf("failed to get absolute path of file %q: %v", imageFile, err)
 		}
 
-		pulledImage := fmt.Sprintf("%s:%s", addonResizer, "1.8.8")
+		pulledImage := fmt.Sprintf("%s:%s", echoServerImg, "1.0")
 		rr, err := Run(t, exec.CommandContext(ctx, "docker", "pull", pulledImage))
 		if err != nil {
 			t.Fatalf("failed to setup test (pull image): %v\n%s", err, rr.Output())
@@ -424,8 +425,11 @@ func validateImageCommands(ctx context.Context, t *testing.T, profile string) {
 		if err != nil {
 			t.Fatalf("saving image from minikube to daemon: %v\n%s", err, rr.Output())
 		}
-
-		rr, err = Run(t, exec.CommandContext(ctx, "docker", "image", "inspect", taggedImage))
+		imageToDelete := taggedImage
+		if ContainerRuntime() == "crio" {
+			imageToDelete = cruntime.AddLocalhostPrefix(imageToDelete)
+		}
+		rr, err = Run(t, exec.CommandContext(ctx, "docker", "image", "inspect", imageToDelete))
 		if err != nil {
 			t.Fatalf("expected image to be loaded into Docker, but image was not found: %v\n%s", err, rr.Output())
 		}
